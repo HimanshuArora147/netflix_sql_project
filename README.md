@@ -22,21 +22,20 @@ The data for this project is sourced from the Kaggle dataset:
 
 ```sql
 DROP TABLE IF EXISTS netflix;
-CREATE TABLE netflix
-(
-    show_id      VARCHAR(5),
-    type         VARCHAR(10),
-    title        VARCHAR(250),
-    director     VARCHAR(550),
-    casts        VARCHAR(1050),
-    country      VARCHAR(550),
-    date_added   VARCHAR(55),
-    release_year INT,
-    rating       VARCHAR(15),
-    duration     VARCHAR(15),
-    listed_in    VARCHAR(250),
-    description  VARCHAR(550)
-);
+CREATE TABLE netflix(
+						show_id	VARCHAR(6),
+						type VARCHAR(10),
+						title VARCHAR(150),
+						director VARCHAR(208),
+						casts VARCHAR(1000),
+						country	VARCHAR(150),
+						date_added VARCHAR(50),
+						release_year INT,
+						rating VARCHAR(10),
+						duration VARCHAR(15),
+						listed_in VARCHAR(100),
+						description VARCHAR(250)
+                     );
 ```
 
 ## Business Problems and Solutions
@@ -45,7 +44,8 @@ CREATE TABLE netflix
 
 ```sql
 SELECT 
-type, COUNT(*) as total_content
+	type,
+	COUNT(*)
 FROM netflix
 GROUP BY 1;
 ```
@@ -83,9 +83,12 @@ WHERE rank = 1;
 ### 3. List All Movies Released in a Specific Year (e.g., 2020)
 
 ```sql
-SELECT * 
+SELECT title
 FROM netflix
-WHERE release_year = 2020;
+WHERE 
+	type = 'Movie'
+	AND
+	release_year = 2020
 ```
 
 **Objective:** Retrieve all movies released in a specific year.
@@ -96,12 +99,12 @@ WHERE release_year = 2020;
 SELECT * 
 FROM
 (
-    SELECT 
-        UNNEST(STRING_TO_ARRAY(country, ',')) AS country,
-        COUNT(*) AS total_content
-    FROM netflix
-    GROUP BY 1
-) AS t1
+	SELECT 
+		TRIM(UNNEST(STRING_TO_ARRAY(country, ','))) as country,
+		COUNT(*) as total_content
+	FROM netflix
+	GROUP BY 1
+)as t1
 WHERE country IS NOT NULL
 ORDER BY total_content DESC
 LIMIT 5;
@@ -110,14 +113,20 @@ LIMIT 5;
 **Objective:** Identify the top 5 countries with the highest number of content items.
 
 ### 5. Identify the Longest Movie
-
+Method 1
 ```sql
 SELECT 
-    *
+	title,  
+	SUBSTRING(duration, 1,POSITION ('m' IN duration)-1)::INT duration
 FROM netflix
-WHERE type = 'Movie'
-ORDER BY SPLIT_PART(duration, ' ', 1)::INT DESC;
+WHERE 
+	type = 'Movie' 
+	AND 
+	duration IS NOT NULL
+ORDER BY 2 DESC
+LIMIT 1;
 ```
+
 
 **Objective:** Find the movie with the longest duration.
 
