@@ -127,6 +127,37 @@ ORDER BY 2 DESC
 LIMIT 1;
 ```
 
+Method 2
+```sql
+SELECT 
+    title, 
+    duration, 
+    CAST(SPLIT_PART(duration, ' ', 1) AS INT) AS movie_length
+FROM 
+    netflix
+WHERE 
+    type = 'Movie'
+	AND
+	duration IS NOT NULL
+ORDER BY 
+    movie_length DESC
+LIMIT 1;
+```
+Method 3
+```sql
+SELECT 
+	title,
+	duration
+FROM netflix
+WHERE 
+	type = 'Movie'
+	AND
+	duration IS NOT NULL
+ORDER BY SPLIT_PART(duration, ' ', 1)::INT DESC
+LIMIT 1;
+```
+
+
 
 **Objective:** Find the movie with the longest duration.
 
@@ -144,13 +175,8 @@ WHERE TO_DATE(date_added, 'Month DD, YYYY') >= CURRENT_DATE - INTERVAL '5 years'
 
 ```sql
 SELECT *
-FROM (
-    SELECT 
-        *,
-        UNNEST(STRING_TO_ARRAY(director, ',')) AS director_name
-    FROM netflix
-) AS t
-WHERE director_name = 'Rajiv Chilaka';
+FROM netflix
+WHERE director ILIKE '%Rajiv Chilaka%'
 ```
 
 **Objective:** List all content directed by 'Rajiv Chilaka'.
