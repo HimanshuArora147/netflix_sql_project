@@ -45,8 +45,7 @@ CREATE TABLE netflix
 
 ```sql
 SELECT 
-    type,
-    COUNT(*)
+	type, COUNT(*) as total_content
 FROM netflix
 GROUP BY 1;
 ```
